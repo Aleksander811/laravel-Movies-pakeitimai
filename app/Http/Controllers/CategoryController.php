@@ -7,24 +7,16 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-
-    public function addCategory(){
-
-        return view('pages.add-category');
-   }
-
-   public function store(Request $request){
-    $validated = $request->validate([
-        'title'=>'required|unique:movies|max:255',
-
-    ]);
-   Category::create([
-        'title'=>request('title'),
-
-   ]);
-
-   return redirect('/');
-}
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $categories = Category::all();
+        return view('pages.all-categories',compact('categories'));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -33,7 +25,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.add-category');
     }
 
     /**
@@ -44,19 +36,16 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title'=>'required|unique:categories|max:255',
+        ]);
+
+        Category::create([
+            'title'=>request('title'),
+        ]);
+        return redirect('/all-categories');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Category $category)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -66,7 +55,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return view('pages.edit-category',compact('category'));
     }
 
     /**
@@ -78,7 +67,11 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        Category::where('id',$category->id)->update(
+            $request->only(['title'])
+        );
+
+        return redirect('/all-categories');
     }
 
     /**
@@ -89,6 +82,13 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+
+        return redirect('/all-categories');
+    }
+
+    public function showCategory(Category $category){
+
+        return view('pages.category', compact('category'));
     }
 }
